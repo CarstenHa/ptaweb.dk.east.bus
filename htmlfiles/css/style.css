@@ -1,0 +1,765 @@
+/* License: GNU Lesser General Public License v3.0 */
+/* See: http://www.gnu.org/licenses/lgpl-3.0.html */
+/* Written by Carsten Jacob */
+/* Please feel free to contact me coding@langstreckentouren.de */
+/* https://github.com/CarstenHa */
+
+   * {
+    box-sizing: border-box;
+   }
+   a {
+    color: #555555;
+   }
+   a.symbol {
+    text-decoration: none;
+   }
+   a:visited {
+    color: #666666;
+   }
+   a:hover {
+    color: #333333;
+   }
+   a:active {
+    color: #000000;
+   }
+   a.masterueber {
+    text-decoration: none;
+    color: #222;
+   }
+   a.masterueber:hover {
+    text-decoration: underline;
+   }
+   div.navi {
+    position: relative;
+    width: 100%;
+    height: 2em;
+    margin: 1em 0 1.4em 0;
+   }
+   a.neuladen {
+    width: 80px;
+    height: 30px;
+    padding: .3em;
+    border: 1px solid grey;
+    border-radius: 10px;
+    font-size: 1.2em;
+    text-decoration: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    text-align: center;
+    background-color: white;
+    font-weight: normal;
+   }
+   a.neuladen:hover {
+    background-color: orange;
+    color: white;
+    border: 1px solid #903414;
+   }
+   main {
+    position: relative;
+   }
+   main.imp {
+    display: grid;
+    grid-template-columns: .8fr 1.4fr .8fr;
+    grid-template-rows: 10vh 1fr 1fr;
+    align-content: space-between;
+    justify-content: space-between;
+   }
+   div#imp {
+    grid-column: 2 / 3;
+    grid-row:    2 / 3;	
+    max-width: 65em;
+    margin: 0;
+    padding: 1em;
+    border: 1px solid #ddd;
+    background-color: #eeeeee;
+    border-radius: 10px;
+   }
+   div#imp h4,
+   div#imp p {
+    margin: 0;
+    padding: inherit;
+   }
+   /* Statistics-Element - Anfang */
+   div#stat {
+    font-size: 1em;
+    background-color: #eeeeee;
+    padding: 1.2em 1em;
+    border: 1px solid #d6d6d6;
+    border-radius: 10px;
+    /* Hier muss die Höhe bei eventueller Änderung des Inhalts manuell angepasst werden! */
+    height: 33em;
+    transition: height 1s ease-in-out; 
+    position: relative;
+   }
+   @media only screen and (max-width: 320px) {
+    div#stat {height: 28em;}
+   }
+   div#stat.hide {
+    transition: height 1s ease-in-out; 
+    height: 2em; 
+    overflow: hidden;
+   }
+   div#stat hr,
+   div.headerallg hr {
+    background-color: #d6d6d6;
+   }
+   div#stat.hide p,
+   div#stat.hide hr {
+    opacity: 0;
+   }
+   div#stat h4 {
+    margin: -.6em 0 0 0;
+   }
+   /* Verzögertes Einblenden von Absätzen. Kann u.U. bei größerem Absatz auf .4s verkürzt werden */
+   div#stat p,
+   div#stat hr {
+    opacity: 1;
+    transition: opacity .4s ease-in-out; 
+    transition-delay: .8s;
+   }
+   div#stat i#on, div#stat i#off {
+    position: absolute;
+    right: .8em;
+    top: .6em;
+    color: #666666;
+    font-size: 1.2em;
+   }
+   /* Einblenden von Plus/Minus-Zeichen */
+   div#stat.hide i#off, div#stat i#on {
+    opacity: 0;
+    transition: opacity .4s ease-in-out; 
+   }
+   div#stat i#off, div#stat.hide i#on {
+    opacity: 1;
+    transition: opacity .4s ease-in-out; 
+   }
+   /* Statistics-Element - Ende */
+   hr {
+    height: 1px;
+    border: none;
+    background-color: #999999;
+   }
+   button {
+    width: 80px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid grey;
+    border-radius: 10px;
+    font-size: 1.2em;
+    font-family: 'Rubik',sans-serif;
+    font-weight: normal;
+    position: absolute;
+    right: 90px;
+    top: 0;
+    background-color: white;
+   }
+   button:hover {
+    background-color: orange;
+    color: white;
+    border: 1px solid #903414;
+   }
+   body {
+    font-family: 'Rubik',sans-serif;
+    font-weight: 400;
+    font-size: 9pt;
+    line-height: 1.3;
+    color: #222;
+    text-align: left;
+   }
+   div.routes {
+    background-image: url('../images/ptaroute.svg');
+   }
+   div.stopareas {
+    background-image: url('../images/ptastop.svg');
+   }
+   div.gtfsshapes {
+    background-image: url('../images/gtfs.svg');
+   }
+   div.routes,
+   div.stopareas,
+   div.gtfsshapes {
+    background-position: left top;
+    background-size: 80% 80%;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    width: 96vw;
+    height: 96vh;
+    position: absolute;
+    z-index: -1;
+    opacity: 0.1;
+   }
+   div.gtfsshapes {
+    background-size: 12% 12%;
+   }
+   td.osmtabgtfs {
+    background-image: url('../images/gtfs2.svg');
+    background-position: center;
+    background-size: 80% 80%;
+    background-repeat: no-repeat;
+    text-align: center;
+    background-color: #ecf4e2;
+   }
+   td.osmtabgtfs .fa-list {
+    margin-right: 2em;
+   }
+   .index {
+    margin: 0;
+    padding: 0;
+    background-color: #fbf9f5;
+    overflow-x: hidden;
+   }
+   img.indexbanner {
+    margin: 0;
+    padding: 0;
+    border-bottom: 1em solid #444444;
+    width: 100%;
+    height: auto;
+   }
+   .headerallg img#logo {
+    position: absolute;
+    right: 1.2em;
+    top: 2em;
+    width: 140px;
+    height: auto;
+   }
+   header.index img#logo {
+    position: absolute;
+    right: 50px;
+    bottom: 60px;
+    width: 400px;
+    height: auto;
+   }
+   header {
+    margin: .5em;
+   }
+   header.index {
+    position: relative;
+   }
+   header.index h1 {
+    font-family: 'Exo',sans-serif;
+    font-weight: 800;
+    font-size: 10em;
+    position: absolute;
+    bottom: 90px;
+    right: 50px;
+    color: white;
+    text-decoration: none;
+   }
+   header.index h2 {
+    font-family: 'Exo',sans-serif;
+    font-weight: 800;
+    font-size: 2em;
+    position: absolute;
+    bottom: 105px;
+    right: 50px;
+    color: white;
+    text-decoration: none;
+   }
+   header.index h3 {
+    font-family: 'Exo',sans-serif;
+    font-weight: 600;
+    font-size: 1.4em;
+    position: absolute;
+    bottom: 20px;
+    right: 50px;
+    color: white;
+    text-decoration: none;
+    background-color: transparent;
+    padding: 0;
+    border: none;
+   }
+   main.index {
+    font-size: 1.3em;
+    margin: 2em 20% 2em 20%;
+   }
+   figure#sitelogos {
+    margin: 0;
+    padding: 0;
+   }
+   figure#sitelogos figure {
+    display: inline-block;
+    width: 30%;
+    position: relative;
+    padding-left: 2em;
+    margin: 0;
+   }
+   figure#sitelogos img {
+    width: 70%;
+   }
+   figure#sitelogos figcaption {
+    position: absolute;
+    top: 18%;
+    left: 2%;
+    font-family: 'Exo',sans-serif;
+    font-weight: 800;
+    font-size: 2em;
+    /* Imitiert mit Hilfe von text-shadow einen Outline-Effekt. */
+    text-shadow: 1px  1px 1px #333333,
+                 1px -1px 1px #333333,
+                -1px  1px 1px #333333,
+                -1px -1px 1px #333333;
+   }
+   figure#sitelogos figcaption.fcosm {
+    color: #d5d2d2;
+   }
+   figure#sitelogos figcaption.fcgtfs {
+    color: #cbdab7;
+   }
+   h1 {
+    font-family: 'Exo',sans-serif;
+    font-weight: 600;
+    font-size: 1.5em;
+    text-align: center;
+    text-decoration: underline;
+   }
+   h2 {
+    font-size: 1.2em;
+   }
+   h3 {
+    font-size: 1em;
+    background-color: #d6d6d6;
+    padding: 0.6em 1em 0.6em 1em;
+    border: 1px solid #d6d6d6;
+    border-radius: 10px;
+    position: relative;
+   }
+   h4 {
+    font-size: 1em;
+    margin: .5em 0;
+   }
+   h5 {
+    font-size: 1em;
+    font-weight: normal;
+    margin: .7em .4em
+   }
+   div {
+    margin-bottom: 1em;
+   }
+   div.routetab, div.stopareatab, div.stopplat, div.gtfs, div.gtfs2, div.gtfs3, div.gtfs4 {
+    background-color: #f6f5f4;
+    border-radius: 10px;
+    padding: 0.1em 1em 0.1em 1em;
+   }
+   div.stopplat > p {
+    margin-left: .4em;
+   }
+   div.gtfs,
+   div.gtfs2,
+   div.gtfs3,
+   div.gtfs4 {
+    background-color: #ecf4e2;
+   }
+   div.mastertabhg {
+    background-color: #d6d6d6;
+    border-radius: 0 0 10px 10px;
+    padding: 0.1em 1em 0.1em 1em;
+    margin-top: -1.5em;
+    border-left: 1px solid #d6d6d6;
+    border-right: 1px solid #d6d6d6;
+    border-bottom: 1px solid #d6d6d6;
+   }
+   div.gtfs table th,
+   div.gtfs2 table th,
+   div.gtfs3 table th,
+   div.gtfs4 table th {
+    font-weight: normal;
+    background-color: #ecf4e2;
+   }
+   div.gtfs2 table th,
+   div.gtfs3 table th,
+   div.gtfs4 table th {
+    width: 7em;
+    text-align: right;
+   }
+   div.gtfs3 table td:nth-of-type(2) {
+    width: 6em;
+    text-align: center;
+   }
+   div.gtfs4 table td:nth-of-type(2) {
+    width: 6em;
+    text-align: center;
+   }
+   div.gtfs2 table td:nth-of-type(3) {
+    width: 6em;
+    text-align: center;
+   }
+   div.gtfs3 table td:nth-of-type(3) {
+    width: 6em;
+    text-align: center;
+   }
+   div.gtfs4 table td:nth-of-type(3) {
+    width: 6em;
+    text-align: center;
+   }
+   div.gtfs2 table td:nth-of-type(4) {
+    width: 4em;
+    text-align: center;
+   }
+   div.gtfs3 table td:nth-of-type(4) {
+    width: 6em;
+    text-align: center;
+   }
+   div.gtfs4 table td:nth-of-type(4) {
+    width: 6em;
+    text-align: center;
+   }
+   div.gtfs2 table td:nth-of-type(5) {
+    width: 4em;
+    text-align: center;
+   }
+   div.gtfs4 table td:nth-of-type(5) {
+    width: 4em;
+    text-align: center;
+   }
+   div.gtfs4 table td:nth-of-type(6) {
+    width: 4em;
+    text-align: center;
+   }
+   div.gtfs4 table td:nth-of-type(7) {
+    width: 4em;
+    text-align: center;
+   }
+   div.gtfs4 td.pta {
+    background-image: url('../images/ptaroute.svg');
+    background-position: 50% 50%;
+    background-size: 50% 50%;
+    background-repeat: no-repeat;
+   }
+   div.gtfs4 td.pta:visited {
+    background-image: url('../images/ptaroute3.svg');
+    background-position: 50% 50%;
+    background-size: 50% 50%;
+    background-repeat: no-repeat;
+   }
+   div.gtfs4 td.pta:hover {
+    background-image: url('../images/ptaroute2.svg');
+    background-position: 50% 50%;
+    background-size: 50% 50%;
+    background-repeat: no-repeat;
+   }
+   div.gtfs4 td.pta a {
+    text-decoration: none;
+   }
+   /* Abwechselnde Zeilenfarbe in den einzelnen GTFS-Routen-Dateien */
+   div.gtfs table:nth-of-type(2) tr:nth-child(odd) td:nth-child(2),
+   /* Abwechselnde Zeilenfarbe in gtfsroutes.html */
+   div.gtfs2 table:nth-of-type(1) tr:nth-child(even) td:nth-child(2),
+   div.gtfs2 table:nth-of-type(1) tr:nth-child(even) td:nth-child(3),
+   div.gtfs2 table:nth-of-type(1) tr:nth-child(even) td:nth-child(4),
+   div.gtfs2 table:nth-of-type(1) tr:nth-child(even) td:nth-child(5),
+   div.gtfs2 table:nth-of-type(1) tr:nth-child(even) td:nth-child(6),
+   div.gtfs3 table:nth-of-type(1) tr:nth-child(even) td:nth-child(2),
+   div.gtfs3 table:nth-of-type(1) tr:nth-child(even) td:nth-child(3),
+   div.gtfs3 table:nth-of-type(1) tr:nth-child(even) td:nth-child(4),
+   div.gtfs3 table:nth-of-type(1) tr:nth-child(even) td:nth-child(5),
+   div.gtfs4 table:nth-of-type(1) tr:nth-child(even) td:nth-child(2),
+   div.gtfs4 table:nth-of-type(1) tr:nth-child(even) td:nth-child(3),
+   div.gtfs4 table:nth-of-type(1) tr:nth-child(even) td:nth-child(4),
+   div.gtfs4 table:nth-of-type(1) tr:nth-child(even) td:nth-child(5),
+   div.gtfs4 table:nth-of-type(1) tr:nth-child(even) td:nth-child(6),
+   div.gtfs4 table:nth-of-type(1) tr:nth-child(even) td:nth-child(7) {
+    background-color: #f6f9f4;
+   }
+   div.gtfs4 table:nth-of-type(1) tr:nth-child(even) td:nth-child(8) {
+    background-color: #faf9f7;
+   }
+   h3 .fa-chevron-down {
+    position: absolute;
+    right: 10px;
+    top: 6px;
+    z-index: 1;
+    color: #666666;
+    font-size: 1.2em;
+   }
+   p.pfeillinks {
+    position: absolute;
+    right: 10px;
+    top: -34px;
+    z-index: 2;
+    padding: 0;
+    font-size: 1.2em;
+    color: #666666;
+   }
+   .fa-arrow-circle-o-left {
+    margin-right: .2em;
+   }
+   .fa-chevron-left {
+    background-color: #d6d6d6;
+    padding: .2em;
+   }
+   .fa-times {
+    color: #d05d5d;
+   }
+   .fa-check {
+    color: #76b273;
+   }
+   .bgueberhell, .bgueberhell .fa-chevron-left {
+    background-color: #eeeeee !important;
+   }
+   .fa-map {
+    margin-left: .2em;
+   }
+   div.gtfs2 .fa-map,
+   div.gtfs2 .fa-list {
+    margin: 0;
+   }
+   /*.fa-map:hover, .fa-search-plus:hover, .fa-list:hover {*/
+   /* color: #ffffff;*/
+   /* Imitiert mit Hilfe von text-shadow einen Outline-Effekt. */
+   /* text-shadow: 1px  1px 1px #333333,*/
+   /*             1px -1px 1px #333333,*/
+   /*             -1px  1px 1px #333333,*/
+   /*             -1px -1px 1px #333333;*/
+   /*}*/
+   div.masterroute {
+    display: none;
+    position: relative;
+   }
+   .onlyprint {display: none;}
+   div.masterroute:target {
+    display: block;
+    -webkit-animation: tabeinblendung .5s ease-in;
+    animation: tabeinblendung .5s ease-in;
+   }
+    @-webkit-keyframes tabeinblendung {
+    from  { -webkit-transform: translate3d(-100%, 0, 0); }
+    to    { -webkit-transform: translate3d(0, 0, 0); }
+   }
+    @keyframes tabeinblendung {
+    from  { transform: translate3d(-100%, 0, 0); }
+    to    { transform: translate3d(0, 0, 0); }
+   }
+   div.headerallg {
+    margin: 0 -.4em;
+    padding: 0.1em 1em 0.1em 1em;
+    border: 1px solid #ddd;
+    background-color: #eeeeee;
+    border-radius: 10px;
+    position: relative;
+   }
+   div.headergtfs {
+    margin: 1em 0;
+    background-color: #ecf4e2;
+    position: relative;
+   }
+   div.headerallg img {
+    vertical-align: middle;
+   }
+   div.headerallg img#ptaroutelogo {
+    height: 2.2em;
+    width: auto;
+    margin: .4em .6em .4em .8em;
+   }
+   div.headerallg img#ptastoplogo {
+    height: 1.6em;
+    width: auto;
+    margin: .4em .9em .4em 1em;
+   }
+   div.headerallg img#ptagtfslogo {
+    height: 1.6em;
+    width: auto;
+    margin: .4em .9em .4em 1em;
+   }
+   div.headerallg span {
+    font-family: 'Exo',sans-serif;
+    font-weight: 800;
+    font-size: .7em;
+    color: #ffffff;
+    /* Imitiert mit Hilfe von text-shadow einen Outline-Effekt. */
+    text-shadow: 1px  1px 1px #333333,
+                 1px -1px 1px #333333,
+                -1px  1px 1px #333333,
+                -1px -1px 1px #333333;
+   }
+   div.headerallg span:nth-of-type(1) {
+    position: absolute;
+    top: 3em;
+    left: 1.4em;
+    z-index: 1;
+   }
+   div.headerallg span:nth-of-type(2) {
+    position: absolute;
+    top: 6.9em;
+    left: 1.4em;
+    z-index: 1;
+   }
+   div.headerallg img:nth-of-type(1)#ptastoplogo {
+    margin-top: .6em;
+    margin-bottom: .8em;
+   }
+   table {
+    width: 100%;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    table-layout: fixed;
+    border-collapse: collapse;
+    background-color: #ffffff;
+   }
+   table.stop_plat {
+   border:  2px solid #ddd;
+   }
+   table.mastertab {
+    border:  2px solid #ddd;
+    margin-top: .5em;
+    margin-bottom: 1em;
+   }
+   table.first {
+    border-top:  2px solid #ddd;
+    border-left:  2px solid #ddd;
+    border-right:  2px solid #ddd;
+    margin-bottom: 0;
+   }
+   table.second {
+    border-bottom:  2px solid #ddd;
+    border-left:  2px solid #ddd;
+    border-right:  2px solid #ddd;
+   }
+   table.third {
+    border:  2px solid #ddd;
+   }
+   tr {
+    border-bottom: 1px solid #ddd;
+   }
+   tr.othernotes td {
+    text-align: center;
+   }
+   th {
+    width: 25%;
+    border-right: 1px solid #ddd;
+    background-color: #F6F6F6;
+    padding: .5em;
+   }
+   td {
+    background-color: white;
+    padding: .6em;
+   }
+   td.small {
+    border-right: 1px solid #ddd;
+   }
+   td.withcolour {
+    background-color: #90EE90;
+   }
+   td.yellow {
+    background-color: #F0E68C;
+   }
+   td.red {
+    background-color: #FA8072;
+   }
+   td.grey {
+    background-color: #F6F6F6;
+   }
+   td.green {
+    background-color: #ecf4e2;
+   }
+   td span.routecolour {
+    font-size: 1em;
+    border: 1px solid #666666;
+    margin: .3em;
+    padding: 0 .5em;
+   }
+   /* Abwechselnde Zeilenfarbe in den einzelnen OSM-Haltestellen-Dateien */
+   table.stop_plat tr:nth-child(even) td:nth-child(2),
+   table.stop_plat tr:nth-child(even) td:nth-child(3),
+   table.stop_plat tr:nth-child(even) td:nth-child(4),
+   table.stop_plat tr:nth-child(even) td:nth-child(5) {
+    background-color: #faf9f7;
+   }
+   img.routeicontrain,
+   img.routeiconlightrail,
+   img.routeiconsubway,
+   img.routeiconmonorail,
+   img.routeicontram,
+   img.routeiconbus,
+   img.routeicontrolleybus,
+   img.routeiconferry {
+    width: 16px;
+    height: 16px;
+    vertical-align: -.3em;
+    margin-right: .2em;
+   }
+   /* Wichtige Anweisung. Verhindert den Zeilenumbruch zwischen Routennummer und Routenicon (stop_areas.html) */
+   div.route {
+    display: inline;
+    white-space: pre;
+   }
+   footer {
+    margin: .5em;
+   }
+   footer.index {
+    font-family: 'Rubik',sans-serif;
+    font-weight: 400;
+    font-size: 1.3em;
+    line-height: 1.3;
+    color: #222;
+    text-align: center;
+   }
+@media only screen and (max-width: 620px) {
+   header.index h1 {
+    bottom: 75px;
+    right: 15px;
+    font-size: 3em;
+   }
+   header.index h2 {
+    bottom: 67px;
+    right: 15px;
+    font-size: 1.3em;
+   }
+   header.index h3 {
+    right: 15px;
+    bottom: 10px;
+    font-size: 1.2em;
+   }
+   header.index img#logo {
+    bottom: 45px;
+    right: 15px;
+    width: 200px;
+   }
+   img.indexbanner {
+    border-bottom: .5em solid #444444;
+   }
+   main.index {
+    font-size: 1.2em;
+    margin: 1em 10% 1em 10%;
+   }
+   main.imp {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+   }
+   div#imp {
+    grid-column: 1 / 2;
+    grid-row:    1 / 2;	
+    max-width: 100%;
+   }
+}
+/* ---------------------- Drucklayout ---------------------- */
+@media print {
+   div.masterroute {
+    display: block;
+   }
+   .index {
+    background-color: transparent;
+   }
+   main.index {
+    margin: 0;
+   }
+   main.imp {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+   }
+   div#imp {
+    grid-column: 1 / 2;
+    grid-row:    1 / 2;	
+    max-width: 100%;
+   }
+   .fa-map,
+   div.navi { display: none;}
+   .onlyprint {display: inline;}
+   div#stat.hide {
+    overflow: visible;
+    height: auto;
+   }
+   div#stat i#on, div#stat i#off {display: none;}
+   div#stat.hide p {opacity: 1;}
+}
+
