@@ -144,7 +144,7 @@ ptawebcounter="0"
 # ** index.html **
 if [ -n "$(git ls-files --modified | grep '^index.html')" ]; then
  let ptawebcounter++
- echo "*** 2.${ptawebcounter}. index.html wird im Index aktualisiert ***"
+ echo "*** 3.${ptawebcounter}. index.html wird im Index aktualisiert ***"
  git add -u index.html
  echo "Fertig."
 fi
@@ -154,7 +154,7 @@ fi
 delhtmlfiles="$(git ls-files --deleted htmlfiles)"
 if [ -n "$delhtmlfiles" ]; then
  let ptawebcounter++
- echo "*** 2.${ptawebcounter}. Gelöschte Dateien im Working Tree (Ordner htmlfiles) ***"
+ echo "*** 3.${ptawebcounter}. Gelöschte Dateien im Working Tree (Ordner htmlfiles) ***"
  echo "$delhtmlfiles"
  echo "Dateien werden aus Index gelöscht ..."
  git rm $delhtmlfiles
@@ -165,7 +165,7 @@ fi
 newhtmlfiles="$(git status --porcelain htmlfiles | grep '^??' | sed 's/^?? \(.*$\)/\1/')"
 if [ -n "$newhtmlfiles" ]; then
  let ptawebcounter++
- echo "*** 2.${ptawebcounter}. Neue Dateien im Working Tree (Ordner htmlfiles) ***"
+ echo "*** 3.${ptawebcounter}. Neue Dateien im Working Tree (Ordner htmlfiles) ***"
  echo "$newhtmlfiles"
  echo "Dateien werden dem Index hinzugefügt ..."
  git add $newhtmlfiles
@@ -176,7 +176,7 @@ fi
 modhtmlfiles="$(git ls-files --modified htmlfiles)"
 if [ -n "$modhtmlfiles" ]; then
  let ptawebcounter++
- echo "*** 2.${ptawebcounter}. Geänderte Dateien im Index (Ordner htmlfiles) ***"
+ echo "*** 3.${ptawebcounter}. Geänderte Dateien im Index (Ordner htmlfiles) ***"
  echo "$modhtmlfiles"
  echo "Index update ..."
  git add -u $modhtmlfiles
