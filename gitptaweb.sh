@@ -98,9 +98,18 @@ osmlist2="$(echo "$osmhtmllist2" | sed '/^$/d')"
 if [ -n "$osmlist" -o -n "$gtfslist" -o -n "$osmlist2" ]; then
  let webcheckerrorcounter++
  echo -e "\nFolgende Web-Seiten fehlen:"
- [ -n "$osmlist" ] && echo "$osmlist"
- [ -n "$gtfslist" ]&& echo "$gtfslist"
- [ -n "$osmlist2" ] && echo "$osmlist2"
+ if [ -n "$osmlist" ]; then
+  echo "Fehlende OSM-Seiten:"
+  echo "$osmlist"
+ fi
+ if [ -n "$gtfslist" ]; then
+  echo "Fehlende GTFS-Seiten:"
+  echo "$gtfslist"
+ fi
+ if [ -n "$osmlist2" ]; then
+  echo "Fehlende Seite(n), in ${invcfgfile} gelistet mit Status 1 bzw. 2:"
+  echo "$osmlist2"
+ fi
 else
  echo "Webseiten vollständig."
 fi
