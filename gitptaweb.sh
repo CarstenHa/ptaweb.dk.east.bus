@@ -2,20 +2,30 @@
 # Folgende Dateien und Ordner werden berücksichtigt:
 # index.html und alle Dateien und Ordner in htmlfiles (rekursiv)
 
-exec &> >(tee -a ../pta/backup/`date +%Y%m%d_%H%M`_gitptaweb.log)
+if [ ! -e ./.gitptaweb ]; then
+ echo "buscfgfile=\"\"" >./.gitptaweb
+ echo "invcfgfile=\"\"" >>./.gitptaweb
+ echo "baklogfile=\"\"" >>./.gitptaweb
+ echo "ptagendir=\"\"" >>./.gitptaweb
+ echo "Bitte erst Pfade in config-Datei ./.gitptaweb definieren. Skript wird abgebrochen!"
+ exit 1
+else
+ source ./.gitptaweb
+fi
 
-buscfgfile="../pta/config/real_bus_stops.cfg"
-invcfgfile="../pta/config/invalidroutes.cfg"
-ptagendir="../pta/htmlfiles"
+exec &> >(tee -a "$baklogfile")
 
 if [ ! -e "$buscfgfile" ]; then
- echo -e "Datei ${buscfgfile} existiert nicht. Ist der korrekte Pfad in diesem Skript definiert?\nSkript wird abgebrochen!"
+ echo -e "Datei ${buscfgfile} existiert nicht. Ist der korrekte Pfad in der Datei .gitptaweb eingetragen?\nSkript wird abgebrochen!"
  exit 1
 elif [ ! -e "$invcfgfile" ]; then
- echo -e "Datei ${invcfgfile} existiert nicht. Ist der korrekte Pfad in diesem Skript definiert?\nSkript wird abgebrochen!"
+ echo -e "Datei ${invcfgfile} existiert nicht. Ist der korrekte Pfad in der Datei .gitptaweb eingetragen?\nSkript wird abgebrochen!"
  exit 1
 elif [ ! -d "$ptagendir" ]; then
- echo -e "Ordner ${ptagendir} existiert nicht. Ist der korrekte Pfad in diesem Skript definiert?\nSkript wird abgebrochen!"
+ echo -e "Ordner ${ptagendir} existiert nicht. Ist der korrekte Pfad in der Datei .gitptaweb eingetragen?\nSkript wird abgebrochen!"
+ exit 1
+elif [ ! -d "$(dirname "$baklogfile")" ]; then
+ echo -e "Ordner $(dirname "$baklogfile") existiert nicht. Ist der korrekte Pfad in der Datei .gitptaweb eingetragen?\nSkript wird abgebrochen!"
  exit 1
 fi
 
